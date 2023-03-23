@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "array",
+    "items": { "$ref": "#/$defs/route" },
+    "$defs": {
+        "route": {
+            "type": "object",
+            "properties": {
+                "Nom": {"type": ["string", "null"], "description":"The name of the climbing route."},
+                "Cotation": {"type": "string", "description":"The difficulty rating of the climbing route."},
+                "Couleur": {"type": "string", "description":"The color of the holds used in the climbing route."},
+                "Relais": {"type": "string", "description":"The location of the anchor point at the top of the climbing route."},
+                "Commentaire": {"type": ["string", "null"], "description":"Any additional comments about the climbing route."},
+                "Ouvreur": {"type": ["string", "null"], "description":"The name of the person who created this route."},
+                "Date": {"type":"number",  "description":"A timestamp of when this route was created."},
+                "Départ assis":{"type":"boolean",  "description":"Whether or not this climbing route starts from a sitting position."},
+                "Module":{"type":"boolean",  "description":"Whether or not a modules are allowed on this climbing route."},
+                "Arête":{"type":"boolean",  "description":"Whether or not edges are allowed on this climbing route."},
+                "Dièdre":{"type":"boolean",  "description":"Whether or not dihedrals are allowed on this climbing route."}
+            },
+            "required":["Nom","Cotation","Couleur","Relais","Départ assis","Module","Arête","Dièdre"]
+        }
+    }
+}

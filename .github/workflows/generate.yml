@@ -5,11 +5,12 @@ on:
     branches:
       - main
 
+env:
+  filename: escalade-orsay
+
 jobs:
   generate_json:
     runs-on: ubuntu-latest
-    env:
-      filename: escalade-orsay
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -23,14 +24,44 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Set current date
+        id: current_date
         run: |
-          echo "dateNow=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
+          echo "date_now=$(date --rfc-3339=date)" >> $GITHUB_OUTPUT
 
       - name: Generate JSON
-        run: python src/main.py ${{ env.dateNow }}_${{ env.filename }}.json
+        run: python src/main.py ${{ steps.current_date.outputs.date_now }}_${{ env.filename }}.json
 
       - name: Upload JSON
         uses: actions/upload-artifact@v3
         with:
           name: json_${{ github.run_number }}_${{ github.run_id }}
-          path: ${{ env.dateNow }}_${{ env.filename }}.json
+          path: ${{ steps.current_date.outputs.date_now }}_${{ env.filename }}.json
+    outputs:
+      date_now: ${{ steps.current_date.outputs.date_now }}
+
+
+  check_json:
+    runs-on: ubuntu-latest
+    needs: generate_json
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install JSON Schema validator
+        run: pip install jsonschema
+
+      - name: Download JSON
+        uses: actions/download-artifact@v3
+        with:
+          name: json_${{ github.run_number }}_${{ github.run_id }}
+
+      - name: Check JSON
+        run: |
+          echo "Checking JSON file against schema..."
+          jsonschema --instance ${{ needs.generate_json.outputs.date_now }}_${{ env.filename }}.json src/schema.json > /dev/null
+          echo "JSON file is valid"
