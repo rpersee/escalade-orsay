@@ -1,0 +1,30 @@
+name: Generate JSON
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate_json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate JSON
+        run: python src/main.py output.json
+
+      - name: Upload JSON
+        uses: actions/upload-artifact@v2
+        with:
+          name: json_${{ github.run_number }}_${{ github.run_id }}
+          path: output.json
