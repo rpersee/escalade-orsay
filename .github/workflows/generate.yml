@@ -8,6 +8,8 @@ on:
 jobs:
   generate_json:
     runs-on: ubuntu-latest
+    env:
+      filename: escalade-orsay
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -22,13 +24,13 @@ jobs:
 
       - name: Set current date
         run: |
-          echo "DATE=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
+          echo "dateNow=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
 
       - name: Generate JSON
-        run: python src/main.py "${DATE}_escalade-orsay.json"
+        run: python src/main.py ${{ env.dateNow }}_${{ env.filename }}.json
 
       - name: Upload JSON
         uses: actions/upload-artifact@v3
         with:
           name: json_${{ github.run_number }}_${{ github.run_id }}
-          path: "${DATE}_escalade-orsay.json"
+          path: ${{ env.dateNow }}_${{ env.filename }}.json
