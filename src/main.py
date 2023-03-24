@@ -78,6 +78,10 @@ if __name__ == "__main__":
         str).apply(partial(get_flag, "arête"))
     df["Dièdre"] = df["Commentaire"].astype(
         str).apply(partial(get_flag, "dièdre"))
+    
+    # extract the number of the anchor point from the "Relais" column
+    df["No. Relais"] = df["Relais"].astype(str).apply(
+        lambda s: int(match.group(0)) if (match:=re.match(r"^\d+", s)) else None)
 
     # set encoding explicitly to avoid escaping unicode characters
     with open(fname, "w", encoding="utf-8") as file:
